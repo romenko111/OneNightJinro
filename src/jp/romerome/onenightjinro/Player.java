@@ -5,12 +5,14 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class Player implements Serializable
 {
-	public static final int JOB_NUM = 4;
+	public static final int JOB_NUM = 6;
 	public static final int JOB_NONE = -1;
 	public static final int JOB_JINRO = 0;
 	public static final int JOB_AUGUR = 1;
 	public static final int JOB_THIEF = 2;
 	public static final int JOB_VILLAGER = 3;
+	public static final int JOB_LUNATIC = 4;
+	public static final int JOB_TERUTERU = 5;
 
 	private String mName;
 	private int mFirstJob;
@@ -80,44 +82,12 @@ public class Player implements Serializable
 
 	public String getFirstJobName()
 	{
-		switch (mFirstJob)
-		{
-			case JOB_JINRO:
-				return "人狼";
-
-			case JOB_AUGUR:
-				return "占い師";
-
-			case JOB_THIEF:
-				return "怪盗";
-
-			case JOB_VILLAGER:
-				return "村人";
-
-			default:
-				return "NONE";
-		}
+		return getJobName(mFirstJob);
 	}
 
 	public String getSecondJobName()
 	{
-		switch (mSecondJob)
-		{
-			case JOB_JINRO:
-				return "人狼";
-
-			case JOB_AUGUR:
-				return "占い師";
-
-			case JOB_THIEF:
-				return "怪盗";
-
-			case JOB_VILLAGER:
-				return "村人";
-
-			default:
-				return "NONE";
-		}
+		return getJobName(mSecondJob);
 	}
 
 	public static String getJobName(int job)
@@ -135,6 +105,12 @@ public class Player implements Serializable
 
 			case JOB_VILLAGER:
 				return "村人";
+
+			case JOB_LUNATIC:
+				return "狂人";
+
+			case JOB_TERUTERU:
+				return "てるてる";
 
 			default:
 				return "NONE";

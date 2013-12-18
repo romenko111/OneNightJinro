@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp" >
+
+	<TableLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:stretchColumns="2" >
+
+	    <TableRow>
+	        <TextView
+	            android:text="人狼" />
+	        <TextView
+	            android:id="@+id/tv_num_jinro"
+	            android:text="0"
+	            android:layout_width="wrap_content"
+	            android:layout_marginLeft="5dp"
+	            android:layout_marginRight="5dp" />
+	        <SeekBar
+		        android:id="@+id/seek_jinro" />
+	    </TableRow>
+
+	    <TableRow>
+	        <TextView
+	            android:text="占い師" />
+	        <TextView
+	            android:id="@+id/tv_num_augur"
+	            android:text="0"
+	            android:layout_width="wrap_content"
+	            android:layout_marginLeft="5dp"
+	            android:layout_marginRight="5dp" />
+	        <SeekBar
+		        android:id="@+id/seek_augur" />
+	    </TableRow>
+
+	    <TableRow>
+	        <TextView
+	            android:text="怪盗" />
+	        <TextView
+	            android:id="@+id/tv_num_thief"
+	            android:text="0"
+	            android:layout_width="wrap_content"
+	            android:layout_marginLeft="5dp"
+	            android:layout_marginRight="5dp" />
+	        <SeekBar
+		        android:id="@+id/seek_thief"
+		         />
+	    </TableRow>
+
+	    <TableRow>
+	        <TextView
+	            android:text="狂人" />
+	        <TextView
+	            android:id="@+id/tv_num_lunatic"
+	            android:text="0"
+	            android:layout_width="wrap_content"
+	            android:layout_marginLeft="5dp"
+	            android:layout_marginRight="5dp" />
+	        <SeekBar
+		        android:id="@+id/seek_lunatic" />
+	    </TableRow>
+
+	    <TableRow>
+	        <TextView
+	            android:text="てるてる" />
+	        <TextView
+	            android:id="@+id/tv_num_teruteru"
+	            android:text="0"
+	            android:layout_width="wrap_content"
+	            android:layout_marginLeft="5dp"
+	            android:layout_marginRight="5dp" />
+	        <SeekBar
+		        android:id="@+id/seek_teruteru" />
+	    </TableRow>
+
+	    <TableRow>
+	        <TextView
+	            android:text="村人" />
+	        <TextView
+	            android:id="@+id/tv_num_villager"
+	            android:text="0"
+	            android:layout_width="wrap_content"
+	            android:layout_marginLeft="5dp"
+	            android:layout_marginRight="5dp" />
+	        <SeekBar
+		        android:id="@+id/seek_villager" />
+	    </TableRow>
+
+	</TableLayout>
+
+	<LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal" >
+
+	    <Button
+	        android:id="@+id/btn_cancel"
+	        android:layout_width="0dp"
+	        android:layout_weight="1"
+	        android:layout_height="wrap_content"
+	        android:text="Cancel" />
+
+	    <Button
+	        android:id="@+id/btn_ok"
+	        android:layout_width="0dp"
+	        android:layout_weight="1"
+	        android:layout_height="wrap_content"
+	        android:text="OK" />
+
+	</LinearLayout>
+
+</LinearLayout>

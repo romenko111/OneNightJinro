@@ -51,11 +51,26 @@
 	            android:orientation="vertical" >
 	        </LinearLayout>
 
-	        <Button
-	        android:id="@+id/btn_start"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:text="スタート" />
+	        <LinearLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:orientation="horizontal" >
+
+	            <Button
+		        android:id="@+id/btn_jobEdit"
+		        android:layout_width="0dp"
+		        android:layout_weight="1"
+		        android:layout_height="wrap_content"
+		        android:text="役職設定" />
+
+	            <Button
+		        android:id="@+id/btn_start"
+		        android:layout_width="0dp"
+		        android:layout_weight="1"
+		        android:layout_height="wrap_content"
+		        android:text="スタート" />
+
+	        </LinearLayout>
 
         </LinearLayout>
 

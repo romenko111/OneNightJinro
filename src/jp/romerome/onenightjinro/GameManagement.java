@@ -1,7 +1,9 @@
 package jp.romerome.onenightjinro;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -49,6 +51,8 @@ public class GameManagement implements OnClickListener
 	private Drawable mVillagerDrawable;
 	private Drawable mAugurDrawable;
 	private Drawable mThiefDrawable;
+	private Drawable mLunaticDrawable;
+	private Drawable mTeruteruDrawable;
 	HashMap<Integer, Integer> mJobMap;
 
 	private ArrayList<Player> mPlayers;
@@ -79,6 +83,8 @@ public class GameManagement implements OnClickListener
 		mVillagerDrawable = mContext.getResources().getDrawable(R.drawable.villager);
 		mAugurDrawable = mContext.getResources().getDrawable(R.drawable.augur);
 		mThiefDrawable = mContext.getResources().getDrawable(R.drawable.thief);
+		mLunaticDrawable = mContext.getResources().getDrawable(R.drawable.lunatic);
+		mTeruteruDrawable = mContext.getResources().getDrawable(R.drawable.teruteru);
 
 		createDialog();
 	}
@@ -150,13 +156,15 @@ public class GameManagement implements OnClickListener
 		jobNum[Player.JOB_AUGUR] = mJobMap.get(Player.JOB_AUGUR);
 		jobNum[Player.JOB_THIEF] = mJobMap.get(Player.JOB_THIEF);
 		jobNum[Player.JOB_VILLAGER] = mJobMap.get(Player.JOB_VILLAGER);
+		jobNum[Player.JOB_LUNATIC] = mJobMap.get(Player.JOB_LUNATIC);
+		jobNum[Player.JOB_TERUTERU] = mJobMap.get(Player.JOB_TERUTERU);
 		//--------------------
 
 		for (Player player : mPlayers)
 		{
 			while(player.getFirstJob() == Player.JOB_NONE)
 			{
-				int job = (int)(Math.random() * 10) % jobNum.length;
+				int job = (int)(Math.random() * Player.JOB_NUM);
 				if(jobNum[job] > 0)
 				{
 					player.setFirstJob(job);
@@ -189,161 +197,196 @@ public class GameManagement implements OnClickListener
 		switch (state)
 		{
 			case STATE_CONFIRM_OPENJOB:
-				mJobOpenHolder.tv_job.setText("あなたは" +
-						mPlayers.get(who).getFirstJobName() +
-										"です。");
-				mJobOpenHolder.tv_msg.setText("");
-				if(mPlayers.get(who).getFirstJob() == Player.JOB_JINRO)
-				{
-					String msg = "";
-					for(int i=0;i<mPlayers.size();i++)
-					{
-						if(i != who && mPlayers.get(i).getFirstJob() == Player.JOB_JINRO)
-						{
-							msg += mPlayers.get(i).getName() + "さんも" +
-									mPlayers.get(i).getFirstJobName() + "です。";
-						}
-					}
-					mJobOpenHolder.tv_msg.setText(msg);
-				}
-				mJobOpenHolder.actionListLayout.removeAllViews();
-				String actionMsg = "";
-				switch (mPlayers.get(who).getFirstJob())
-				{
-					case Player.JOB_JINRO:
-						actionMsg = "疑う";
-						mJobOpenHolder.iv_job.setImageDrawable(mJinroDrawable);
-						break;
-
-					case Player.JOB_VILLAGER:
-						actionMsg = "疑う";
-						mJobOpenHolder.iv_job.setImageDrawable(mVillagerDrawable);
-						break;
-
-					case Player.JOB_AUGUR:
-						actionMsg = "占う";
-						mJobOpenHolder.iv_job.setImageDrawable(mAugurDrawable);
-						break;
-
-					case Player.JOB_THIEF:
-						actionMsg = "交換";
-						mJobOpenHolder.iv_job.setImageDrawable(mThiefDrawable);
-						break;
-
-					default:
-						break;
-				}
-				for (int i=0;i<mPlayers.size();i++)
-				{
-					if(mPlayers.get(who).getFirstJob() == Player.JOB_THIEF)
-					{
-						View view = mInflater.inflate(R.layout.layout_actionrow, null);
-						((TextView)view.findViewById(R.id.tv_name)).setText(mPlayers.get(i).getName());
-						Button btn = (Button) view.findViewById(R.id.btn_action);
-						if(i != who)
-							btn.setText(actionMsg);
-						else
-							btn.setText("交換しない");
-						btn.setOnClickListener(this);
-						mJobOpenHolder.actionListLayout.addView(view);
-					}
-					else if(mPlayers.get(who).getFirstJob() == Player.JOB_AUGUR)
-					{
-						if(i != who)
-						{
-							View view = mInflater.inflate(R.layout.layout_actionrow, null);
-							((TextView)view.findViewById(R.id.tv_name)).setText(mPlayers.get(i).getName());
-							Button btn = (Button) view.findViewById(R.id.btn_action);
-							btn.setText(actionMsg);
-							btn.setOnClickListener(this);
-							mJobOpenHolder.actionListLayout.addView(view);
-						}
-						if(i == mPlayers.size() -1)
-						{
-							View view = mInflater.inflate(R.layout.layout_actionrow, null);
-							((TextView)view.findViewById(R.id.tv_name)).setText("残りの2枚");
-							Button btn = (Button) view.findViewById(R.id.btn_action);
-							btn.setText(actionMsg);
-							btn.setOnClickListener(this);
-							mJobOpenHolder.actionListLayout.addView(view);
-						}
-					}
-					else if(i != who)
-					{
-						View view = mInflater.inflate(R.layout.layout_actionrow, null);
-						((TextView)view.findViewById(R.id.tv_name)).setText(mPlayers.get(i).getName());
-						Button btn = (Button) view.findViewById(R.id.btn_action);
-						btn.setText(actionMsg);
-						btn.setOnClickListener(this);
-						mJobOpenHolder.actionListLayout.addView(view);
-					}
-				}
-				mGameActivity.setContentView(mJobOpenView);
-				state = STATE_OPENJOB;
+				confirmOpenJob();
 				break;
 
 			case STATE_OPENJOB:
-				mJobOpenHolder.scrollView.scrollTo(0, 0);
-				if(who == mPlayers.size() - 1)
-				{
-					//議論へ
-					mGameActivity.setContentView(mDiscussionView);
-					state = STATE_DISCUSSION;
-				}
-				else
-				{
-					who++;
-					mConfirmHolder.tv_name.setText(mPlayers.get(who).getName());
-					mGameActivity.setContentView(mConfirmView);
-					state = STATE_CONFIRM_OPENJOB;
-				}
+				openJob();
 				break;
 
 			case STATE_DISCUSSION:
-				who = 0;
-				mConfirmHolder.tv_name.setText(mPlayers.get(who).getName());
-				mGameActivity.setContentView(mConfirmView);
-				state = STATE_CONFIRM_VOTE;
+				discussion();
 				break;
 
 			case STATE_CONFIRM_VOTE:
-				mVoteHolder.playerListLayout.removeAllViews();
-				for (int i=0;i<mPlayers.size();i++)
-				{
-					if(i != who)
-					{
-						View view = mInflater.inflate(R.layout.layout_actionrow, null);
-						((TextView)view.findViewById(R.id.tv_name)).setText(mPlayers.get(i).getName());
-						Button btn = (Button) view.findViewById(R.id.btn_action);
-						btn.setText("投票");
-						btn.setOnClickListener(this);
-						mVoteHolder.playerListLayout.addView(view);
-					}
-				}
-				mGameActivity.setContentView(mVoteView);
-				state = STATE_VOTE;
+				confirmVote();
 				break;
 
 			case STATE_VOTE:
-				mVoteHolder.scrollView.scrollTo(0, 0);
-				if(who == mPlayers.size() - 1)
-				{
-					//結果へ
-					createResultView();
-					mGameActivity.setContentView(mResultView);
-					state = STATE_RESULT;
-				}
-				else
-				{
-					who++;
-					mConfirmHolder.tv_name.setText(mPlayers.get(who).getName());
-					mGameActivity.setContentView(mConfirmView);
-					state = STATE_CONFIRM_VOTE;
-				}
+				vote();
 				break;
 
 			default:
 				break;
+		}
+	}
+
+	private void confirmOpenJob()
+	{
+		mJobOpenHolder.tv_job.setText("あなたは" +
+				mPlayers.get(who).getFirstJobName() +
+								"です。");
+		mJobOpenHolder.tv_msg.setText("");
+		if(mPlayers.get(who).getFirstJob() == Player.JOB_JINRO)
+		{
+			String msg = "";
+			for(int i=0;i<mPlayers.size();i++)
+			{
+				if(i != who && mPlayers.get(i).getFirstJob() == Player.JOB_JINRO)
+				{
+					msg += mPlayers.get(i).getName() + "さんも" +
+							mPlayers.get(i).getFirstJobName() + "です。";
+				}
+			}
+			mJobOpenHolder.tv_msg.setText(msg);
+		}
+		mJobOpenHolder.actionListLayout.removeAllViews();
+		String actionMsg = "";
+		switch (mPlayers.get(who).getFirstJob())
+		{
+			case Player.JOB_JINRO:
+				actionMsg = "疑う";
+				mJobOpenHolder.iv_job.setImageDrawable(mJinroDrawable);
+				break;
+
+			case Player.JOB_VILLAGER:
+				actionMsg = "疑う";
+				mJobOpenHolder.iv_job.setImageDrawable(mVillagerDrawable);
+				break;
+
+			case Player.JOB_AUGUR:
+				actionMsg = "占う";
+				mJobOpenHolder.iv_job.setImageDrawable(mAugurDrawable);
+				break;
+
+			case Player.JOB_THIEF:
+				actionMsg = "交換";
+				mJobOpenHolder.iv_job.setImageDrawable(mThiefDrawable);
+				break;
+
+			case Player.JOB_LUNATIC:
+				actionMsg="疑う";
+				mJobOpenHolder.iv_job.setImageDrawable(mLunaticDrawable);
+				break;
+
+			case Player.JOB_TERUTERU:
+				actionMsg="疑う";
+				mJobOpenHolder.iv_job.setImageDrawable(mTeruteruDrawable);
+				break;
+
+			default:
+				break;
+		}
+		for (int i=0;i<mPlayers.size();i++)
+		{
+			if(mPlayers.get(who).getFirstJob() == Player.JOB_THIEF)
+			{
+				View view = mInflater.inflate(R.layout.layout_actionrow, null);
+				((TextView)view.findViewById(R.id.tv_name)).setText(mPlayers.get(i).getName());
+				Button btn = (Button) view.findViewById(R.id.btn_action);
+				if(i != who)
+					btn.setText(actionMsg);
+				else
+					btn.setText("交換しない");
+				btn.setOnClickListener(this);
+				mJobOpenHolder.actionListLayout.addView(view);
+			}
+			else if(mPlayers.get(who).getFirstJob() == Player.JOB_AUGUR)
+			{
+				if(i != who)
+				{
+					View view = mInflater.inflate(R.layout.layout_actionrow, null);
+					((TextView)view.findViewById(R.id.tv_name)).setText(mPlayers.get(i).getName());
+					Button btn = (Button) view.findViewById(R.id.btn_action);
+					btn.setText(actionMsg);
+					btn.setOnClickListener(this);
+					mJobOpenHolder.actionListLayout.addView(view);
+				}
+				if(i == mPlayers.size() -1)
+				{
+					View view = mInflater.inflate(R.layout.layout_actionrow, null);
+					((TextView)view.findViewById(R.id.tv_name)).setText("残りの2枚");
+					Button btn = (Button) view.findViewById(R.id.btn_action);
+					btn.setText(actionMsg);
+					btn.setOnClickListener(this);
+					mJobOpenHolder.actionListLayout.addView(view);
+				}
+			}
+			else if(i != who)
+			{
+				View view = mInflater.inflate(R.layout.layout_actionrow, null);
+				((TextView)view.findViewById(R.id.tv_name)).setText(mPlayers.get(i).getName());
+				Button btn = (Button) view.findViewById(R.id.btn_action);
+				btn.setText(actionMsg);
+				btn.setOnClickListener(this);
+				mJobOpenHolder.actionListLayout.addView(view);
+			}
+		}
+		mGameActivity.setContentView(mJobOpenView);
+		state = STATE_OPENJOB;
+	}
+
+	private void openJob()
+	{
+		mJobOpenHolder.scrollView.scrollTo(0, 0);
+		if(who == mPlayers.size() - 1)
+		{
+			//議論へ
+			mGameActivity.setContentView(mDiscussionView);
+			state = STATE_DISCUSSION;
+		}
+		else
+		{
+			who++;
+			mConfirmHolder.tv_name.setText(mPlayers.get(who).getName());
+			mGameActivity.setContentView(mConfirmView);
+			state = STATE_CONFIRM_OPENJOB;
+		}
+	}
+
+	private void discussion()
+	{
+		who = 0;
+		mConfirmHolder.tv_name.setText(mPlayers.get(who).getName());
+		mGameActivity.setContentView(mConfirmView);
+		state = STATE_CONFIRM_VOTE;
+	}
+
+	private void confirmVote()
+	{
+		mVoteHolder.playerListLayout.removeAllViews();
+		for (int i=0;i<mPlayers.size();i++)
+		{
+			if(i != who)
+			{
+				View view = mInflater.inflate(R.layout.layout_actionrow, null);
+				((TextView)view.findViewById(R.id.tv_name)).setText(mPlayers.get(i).getName());
+				Button btn = (Button) view.findViewById(R.id.btn_action);
+				btn.setText("投票");
+				btn.setOnClickListener(this);
+				mVoteHolder.playerListLayout.addView(view);
+			}
+		}
+		mGameActivity.setContentView(mVoteView);
+		state = STATE_VOTE;
+	}
+
+	private void vote()
+	{
+		mVoteHolder.scrollView.scrollTo(0, 0);
+		if(who == mPlayers.size() - 1)
+		{
+			//結果へ
+			createResultView();
+			mGameActivity.setContentView(mResultView);
+			state = STATE_RESULT;
+		}
+		else
+		{
+			who++;
+			mConfirmHolder.tv_name.setText(mPlayers.get(who).getName());
+			mGameActivity.setContentView(mConfirmView);
+			state = STATE_CONFIRM_VOTE;
 		}
 	}
 
@@ -382,6 +425,8 @@ public class GameManagement implements OnClickListener
 					{
 						case Player.JOB_JINRO:
 						case Player.JOB_VILLAGER:
+						case Player.JOB_LUNATIC:
+						case Player.JOB_TERUTERU:
 							if(i < who)
 							{
 								mConfirmDialog.setMessage(mPlayers.get(i).getName() +"さんを疑いますか？");
@@ -538,6 +583,11 @@ public class GameManagement implements OnClickListener
 					return Player.JOB_JINRO;
 			}
 			return Player.JOB_VILLAGER;
+		}
+		for (Integer i : executionPlayer)
+		{
+			if(mPlayers.get(i).getSecondJob() == Player.JOB_TERUTERU)
+				return Player.JOB_TERUTERU;
 		}
 		for (Integer i : executionPlayer)
 		{
